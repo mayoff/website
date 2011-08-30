@@ -1,0 +1,27 @@
+#!/opt/local/bin/python
+# -*- mode: python -*-
+
+import signal
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+import SimpleHTTPServer
+import urllib
+import os
+import sys
+
+basedir = 'ship'
+sys.argv = [ sys.argv[0], '4000' ]
+
+class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+
+    def translate_path(self, path):
+        path = path.split('?', 1)[0]
+        path = path.split('#', 1)[0]
+        path = os.path.normpath(urllib.unquote(path))
+        if not path.startswith('/'):
+            path = '/' + path
+        return basedir + path
+
+SimpleHTTPServer.test(HandlerClass = MyHandler)
+
+

@@ -1,0 +1,142 @@
+
+
+* {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+HTML {
+    -webkit-text-size-adjust: auto;
+}
+
+BODY {
+    font: 15px/22px 'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Verdana, sans-serif;
+    text-rendering: optimizeLegibility;
+    color: #111;
+    background: #f5f5f5;
+}
+
+#disqus_thread {
+    margin-top: 1in;
+    font-size: 90%;
+}
+
+#page {
+    padding: .25in;
+}
+
+H1 {
+    font-size: 18px;
+    font-weight: bold;
+    font-style: normal;
+    line-height: 27px;
+    margin: 0;
+    margin-bottom: .2in;
+    padding: 0;
+}
+
+A {
+    text-decoration: none;
+}
+
+A:hover {
+    text-decoration: underline;
+    -webkit-text-decoration-style: dotted;
+    -moz-text-decoration-style: dotted;
+    text-decoration-style: dotted;
+}
+
+#indexLink {
+    font-size: 12px;
+}
+
+#index .date {
+    font-size: 12px;
+    color: gray;
+    padding-right: 1em;
+}
+
+P + P {
+    text-indent: 2em;
+}
+
+#content > H1, #contentBody > P, #contentBody > DIV, #contentBody > UL, #contentBody > OL, #disqus_thread {
+    min-width: 2in;
+    max-width: 5in;
+}
+
+.center {
+    text-align: center;
+}
+
+CODE {
+    font-size: 14px;
+}
+
+PRE {
+    font-size: 14px;
+    line-height: 18px;
+    overflow-x: auto;
+    margin: 12px;
+    border: 1px solid #777;
+    padding: 12px;
+    behavior: url('/facade/PIE.htc');
+    -webkit-border-image: url("/facade/PRE_border.png") 1 23 4 23 / 1px 23px 4px 23px repeat repeat;
+    -moz-border-image: url("/facade/PRE_border.png") 1 23 4 23 / 1px 23px 4px 23px repeat repeat;
+    -o-border-image: url("/facade/PRE_border.png") 1 23 4 23 / 1px 23px 4px 23px repeat repeat;
+    border-image: url("/facade/PRE_border.png") 1 23 4 23 / 1px 23px 4px 23px repeat repeat fill;
+    word-wrap: normal;
+    white-space: pre;
+}
+
+BLOCKQUOTE {
+    border: 1px solid #ccc;
+    -webkit-box-shadow: #aaa 0px 1px 2px;
+    -moz-box-shadow: #aaa 0px 1px 2px;
+    box-shadow: #aaa 0px 1px 2px;
+    border-radius: 10px 10px 10px 10px;
+    behavior: url('/facade/PIE.htc');
+    padding: .2in .2in;
+    background-color: #fefefe;
+}
+
+BLOCKQUOTE > :first-child {
+    margin-top: 0;
+}
+
+BLOCKQUOTE > :last-child {
+    margin-bottom: 0;
+}
+
+#author {
+    float: right;
+    background-color:  white;
+    margin: 0 0 .5in .5in;
+    -webkit-transform: rotate(3deg);
+    -moz-transform: rotate(3deg);
+    -ms-transform: rotate(3deg);
+    -o-transform: rotate(3deg);
+    transform: rotate(3deg);
+
+    -webkit-box-shadow: #aaa 0px 5px 6px;
+    -moz-box-shadow: #aaa 0px 5px 6px;
+    box-shadow: #aaa 0px 5px 6px;
+    behavior: url('/facade/PIE.htc');
+
+    text-align: center;
+    border:  1px solid #bbb;
+}
+
+#author IMG {
+    padding: 10px;
+}
+
+FIGCAPTION {
+    margin-top: -5px;
+    padding: 10px;
+    padding-top: 0;
+    text-transform: none;
+    font-family: 'BradleyHandITCTT-Bold', 'Segoe Print', 'Marker Felt', 'comic sans ms', 'cursive';
+    font-style: italic;
+}
+

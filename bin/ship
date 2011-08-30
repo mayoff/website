@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export GIT_DIR=./.ship-git
+git add -A -v
+git commit -m 'checkpoint'
+git push origin master
+

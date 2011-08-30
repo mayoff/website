@@ -1,0 +1,129 @@
+<html>
+    <head>
+        <!--<link rel='stylesheet' type='text/css' href='/~mayoff/house.css' title='House Style'>-->
+	<style type='text/css'><!--
+	    INPUT {
+		font-family: monospace;
+		font-size: 90%;
+	    }
+	    TABLE {
+		border-collapse: collapse;
+	    }
+	    TH {
+		font-size: 80%;
+		text-align: center;
+		vertical-align: bottom;
+		white-space: nowrap;
+		padding-left: 0.25em;
+		padding-right: 0.25em;
+	    }
+	    TD.button {
+		text-align: center;
+		padding-left: 0;
+	    }
+	    TD.numberInput {
+		text-align: right;
+	    }
+	    TD.number {
+		padding-left: 0.75em;
+	    }
+	    .number {
+		text-align: right;
+		font-family: monospace;
+	    }
+	    .sortLabel {
+		cursor: s-resize;
+	    }
+	--></style>
+        <script type='text/javascript' src='utilities.js'></script>
+        <script type='text/javascript' src='main.js'></script>
+        <title>
+            Mortgage Calculator
+        </title>
+    </head>
+    <body>
+        <h1>
+	    Mortgage Calculator
+	</h1>
+	<span id='byline'>
+	    by <a href='/'>Rob Mayoff</a>
+	</span>
+	<div id='main'>
+
+<form action='javascript:;'>
+
+<p> The sale price of the property is $<input class='number' id='salePrice'
+value='100000' size='10' />. </p>
+
+<p> I expect to "bail out" of the loan in <input class='number' id='bailOutYears'
+type='text' value='10' size='4' /> years, by selling the property or
+paying off the loan (possibly by refinancing). </p>
+
+<p> I have $<input class='number' id='cashUpFront' value='30000' size='10' /> in
+cash up front to cover the downpayment, points, and lender fees. I
+have $<input class='number' id='cashMonthly' value='1500' /> per month to spend
+on payments. What I don't spend on those, I'll invest at <input
+class='number'
+id='investmentPercent' value='4' size='4' />% interest (compounded
+monthly). </p>
+
+<p> My tax rate is <input class='number' id='taxPercent' value='33' />%.
+Since the loan interest is deductible, this is equivalent to having that
+percentage of the interest paid for me, leaving extra monthly income to
+invest or apply to the principal. I'm assuming that the deduction will
+not move me to a lower tax bracket.</p>
+
+<p> At any time, you can save the all of the data you've entered simply
+by making a bookmark. </p>
+
+<table id='loanTable'>
+    <tr>
+	<th></th>
+	<th>Dup</th>
+	<th>Del</th>
+	<th id='nameLabel' class='sortLabel'>Name</th>
+	<th>Max<br>Down</th>
+	<th id='downpaymentLabel' class='sortLabel'>Down<br>$</th>
+	<th id='yearsLabel' class='sortLabel'>Years</th>
+	<th id='rateLabel' class='sortLabel'>Rate<br>%</th>
+	<th id='pointsLabel' class='sortLabel'>Points<br>%</th>
+	<th id='feesLabel' class='sortLabel'>Fees<br>$</th>
+	<th>Max<br>Extra</th>
+	<th id='extraPaymentLabel' class='sortLabel'>Extra<br>$/Month</th>
+	<th>Invest<br>Tax<br>Savings?</th>
+	<th id='closingCostsLabel' class='sortLabel'>$ Due at<br>Closing</th>
+	<th id='requiredPaymentLabel' class='sortLabel'>Required<br>Payment</th>
+	<th id='totalPaymentLabel' class='sortLabel'>Total<br>Payment</th>
+	<th id='bailOutEquityLabel' class='sortLabel'>Bail-out<br>Equity</th>
+	<th id='bailOutInvestmentLabel' class='sortLabel'>Bail-out<br>Investment</th>
+	<th id='bailOutTotalLabel' class='sortLabel'>Bail-out<br>Total</th>
+	<th id='finalInvestmentLabel' class='sortLabel'>30 Year<br>Investment</th>
+    </tr>
+    <tr id='loan'>
+	<td class='button' id='move' style='cursor:crosshair'>&#8597;</td>
+	<td class='button'><input id='copy' type='button' value='+' /></td>
+	<td class='button'><input id='remove' type='button' value='-' /></td>
+	<td><input id='name' type='text' size='12' /></td>
+	<td class='button'><input id='maxDown' type='checkbox' /></td>
+	<td class='numberInput'><input class='number' id='downpayment' type='text' size='4' value='20000' /></td>
+	<td class='numberInput'><input class='number' id='years' type='text' size='3' value='30' /></td>
+	<td class='numberInput'><input class='number' id='loanRatePercent' type='text' size='4' value='6.75' /></td>
+	<td class='numberInput'><input class='number' id='points' type='text' size='5' value='0' /></td>
+	<td class='numberInput'><input class='number' id='fees' type='text' size='5' value='1000' /></td>
+	<td class='button'><input id='maxExtra' type='checkbox' /></td>
+	<td class='numberInput'><input class='number' id='extraPayment' type='text' size='5' value='0' /></td>
+	<td class='button'><input id='investTaxSavings' type='checkbox' checked='true' /></td>
+
+	<td class='number' id='closingCosts'></td>
+	<td class='number' id='payment'></td>
+	<td class='number' id='totalPayment'></td>
+	<td class='number' id='bailOutEquity'></td>
+	<td class='number' id='bailOutInvestment'></td>
+	<td class='number' id='bailOutTotal'></td>
+	<td class='number' id='finalInvestment'></td>
+    </tr>
+</table>
+
+	</div>
+    </body>
+</html>

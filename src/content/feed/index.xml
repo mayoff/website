@@ -1,0 +1,24 @@
+---
+indexable: false
+---
+<?xml version='1.0' encoding='UTF-8'?>
+<rss version='2.0' xmlns:atom='http://www.w3.org/2005/Atom'>
+  <channel>
+    <title>Rob Mayoff</title>
+    <link>http://qwan.org/</link>
+    <atom:link href='http://qwan.org/feed/' rel='self' type='application/rss+xml' />
+    <description>Rob Mayoff's Blog and Stuff</description>
+    <language>en-us</language>
+    <lastBuildDate>{{buildTime | formatTimeRss}}</lastBuildDate>
+    {% for entry in index.posts %}
+    <item>
+      <title>{{entry.title}}</title>
+      <link>http://qwan.org{{entry.url}}</link>
+      <author>qwan@rob.dqd.com (Rob Mayoff)</author>
+      <guid isPermaLink="false">{{entry.url}}</guid>
+      <pubDate>{{entry.pubDate | formatTimeRss}}</pubDate>
+    </item>
+    {% endfor %}
+  </channel>
+</rss>
+

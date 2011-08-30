@@ -1,0 +1,282 @@
+#!/opt/local/bin/python2.7
+# -*- mode: python -*-
+
+import jinja2 as jin
+try: import mdx_mathjax
+except: pass
+import markdown
+import os
+import os.path
+import re
+import shutil
+import sys
+import yaml
+import time
+import datetime
+import pytz
+
+sourceDir = u'src/content'
+templateDir = u'src/templates'
+targetDir = u'ship'
+buildTime = time.time()
+localTimeZone = pytz.timezone('US/Central')
+
+class Log:
+
+    def __init__(self):
+        self._indentUnit = u'    '
+        self.reset()
+
+    def log(self, message):
+        lines = message.split(u'\n')
+        for line in lines:
+            sys.stderr.write(self._indent + line + u'\n')
+        return self
+
+    def __call__(self, message):
+        return self.log(message)
+
+    def indent(self):
+        self._indent += self._indentUnit
+        return self
+
+    def outdent(self):
+        self._indent = self._indent[0:-len(self._indentUnit)]
+        return self
+
+    def reset(self):
+        self._indent = u''
+        return self
+
+class MyLoader(jin.BaseLoader):
+    def get_source(self, environment, name):
+        sourceFile = sourceFiles[name]
+        return (sourceFile.htmlContent(), name, None)
+
+def makeDatetime(time):
+    if type(time) == str or type(time) == unicode:
+        if time.endswith('Z'):
+            time = time[:-1]
+            tz = pytz.utc
+        else:
+            tz = localTimeZone
+        time = time.replace('-', ' ').replace('/', ' ').replace(':', ' ').replace('T', ' ')
+        timeParts = map(int, time.split(' '))
+        time = datetime.datetime(*timeParts, tzinfo=tz)
+    elif type(time) == float or type(time) == 'int':
+        time = datetime.datetime.fromtimestamp(time, pytz.utc)
+    return time
+
+def formatTimeLocal(time, format):
+    return makeDatetime(time).astimezone(localTimeZone).strftime(format)
+
+def formatTimeUtc(time, format):
+    return makeDatetime(time).astimezone(pytz.utc).strftime(format)
+
+def formatTimeRss(time):
+    return formatTimeUtc(time, '%a, %d %b %Y %H:%M:%S %z')
+
+log = Log()
+sourceFiles = {}
+templateFiles = {}
+
+mdProcessor = markdown.Markdown(extensions=['mathjax'])
+jEnvironment = jin.Environment(loader = MyLoader())
+jEnvironment.filters['formatTimeLocal'] = formatTimeLocal
+jEnvironment.filters['formatTimeUtc'] = formatTimeUtc
+jEnvironment.filters['formatTimeRss'] = formatTimeRss
+dateRE = re.compile(u'''/([0-9]{4})/([0-9]{2})/([0-9]{2})(?:[^0-9]|$)''')
+index = {
+    u'pages': [],
+    u'posts': []
+}
+
+def shouldIgnore(filename):
+    return filename[0] in (u'_', u'.')
+
+def dateForUrl(url):
+    dateMatch = dateRE.match(url)
+    return u'-'.join(dateMatch.groups()) if dateMatch else None
+
+def unicodify(o):
+    if type(o) == 'list':
+        return [unicodify(v) for v in o]
+    elif type(o) == 'dict':
+        return dict.fromkeys(o.keys(), [unicodify(v) for v in o.values()])
+    elif type(o) == 'str':
+        return o.decode('utf-8')
+    else:
+        return o
+
+class SourceFile(object):
+
+    def __init__(self, path):
+        self.path = path
+        self.__isMarkdown = self.path.endswith(u'.md')
+        self.contentOffset = 0
+        self.metadata = None
+        self.__loadMetadata()
+        sourceFiles[self.path] = self
+
+    def isMarkdown(self):
+        """Returns True if my raw content uses Markdown."""
+        return self.__isMarkdown
+
+    def hasMetadata(self):
+        return self.metadata is not None
+
+    def getMetadata(self, key, default = None):
+        return self.metadata.get(key, default) if self.metadata else default
+
+    def needsProcessing(self):
+        """Return True if my content needs to be processed in any way before shipping."""
+        return self.isMarkdown() or self.hasMetadata()
+
+    def __loadMetadata(self):
+        f = open(self.path, 'rb')
+        # Note: don't set f.encoding to utf-8 because f might contain binary data that is not valid UTF-8!
+        magic = f.read(4)
+        if magic != '---\n':
+            return
+        md = ''
+        while True:
+            line = f.readline()
+            if line == '---\n':
+                break
+            md += line
+        self.contentOffset = f.tell()
+        import yaml
+        self.metadata = unicodify(yaml.load(md.decode('utf-8'), yaml.loader.SafeLoader))
+        self.metadata.setdefault('allowComments', True)
+
+    def renderedUnicode(self, context):
+        """Return a unicode containing my content, with my entire template chain rendered and all Markdown converted to HTML."""
+
+        content = self.renderAsTemplate(context)
+        templateName = self.getMetadata(u'template')
+        if templateName:
+            log(u'rendering template ' + templateName)
+            template = templateFiles[templateName]
+            context['content'] = content
+            content = template.renderedUnicode(context)
+        return content
+
+    def renderAsTemplate(self, context):
+        jTemplate = jEnvironment.get_template(self.path)
+        return jTemplate.render(context)
+
+    def htmlContent(self):
+        content = self.rawContent()
+        if self.isMarkdown():
+            log(u'converting Markdown to HTML')
+            content = htmlForMarkdown(content)
+        return content
+
+    def rawContent(self):
+        stream = open(self.path, 'rb')
+        stream.seek(self.contentOffset)
+        return stream.read().decode('utf-8')
+
+class ContentFile(SourceFile):
+
+    def __init__(self, path):
+        SourceFile.__init__(self, path)
+        self.target = targetDir + self.path[len(sourceDir):]
+        if self.isMarkdown():
+            self.target = os.path.splitext(self.target)[0] + u'.html'
+        self.url = self.target[len(targetDir):]
+        if self.url.endswith(u'/index.html'):
+            self.url = self.url[:-len(u'index.html')]
+        if self.hasMetadata():
+            self.metadata['url'] = self.url
+        self.date = dateForUrl(self.url)
+
+    def addToIndex(self):
+        if not self.hasMetadata():
+            return
+        log(`self.path` + u' indexable = ' + `self.getMetadata(u'indexable', True)`)
+        if not self.getMetadata(u'indexable', True):
+            return
+        l = index[u'posts'] if self.date else index[u'pages']
+        l.append(dict(
+            date = self.date,
+            pubDate = self.getMetadata(u'date', self.date),
+            title = self.getMetadata(u'title', self.url),
+            url = self.url
+        ))
+
+    def buildTarget(self):
+        self.makeTargetFolder()
+        if not self.needsProcessing():
+            log(u'copying raw ' + `self.path` + u' -> ' + `self.target`)
+            shutil.copyfile(self.path, self.target)
+        else:
+            log(u'processing ' + `self.path`).indent()
+            self.writeTarget(self.renderedUnicode(self.makeContext()))
+            log.outdent()
+
+    def makeContext(self):
+        return dict(
+            page=self.metadata,
+            index=index,
+            url=self.url,
+            date=self.date,
+            content=None,
+            buildTime=buildTime
+        )
+
+    def writeTarget(self, content):
+        log(u'writing ' + `self.target`)
+        stream = open(self.target, 'wb')
+        stream.write(content.encode('utf-8'))
+
+    def makeTargetFolder(self):
+        path = os.path.dirname(self.target)
+        if not os.path.isdir(path):
+            os.makedirs(path)
+
+def main():
+    log(u'note: scanning template files').indent()
+    scanTemplateFiles()
+    log.reset().log(u'note: scanning content files').indent()
+    contentFiles = getContentFiles()
+    log.reset().log(u'note: indexing content files').indent()
+    for f in contentFiles:
+        f.addToIndex()
+    index[u'posts'].sort(reverse=True, key=lambda p: p['url'])
+    index[u'pages'].sort(key=lambda p: p['url'])
+    log.reset().log(u'note: building target files').indent()
+    for f in contentFiles:
+        f.buildTarget()
+    log.reset()
+
+def scanTemplateFiles():
+    for filename in os.listdir(templateDir):
+        if shouldIgnore(filename):
+            continue
+        path = os.path.join(templateDir, filename)
+        name = os.path.splitext(filename)[0]
+        log(`name` + u' -> ' + `path`)
+        templateFiles[name] = SourceFile(path)
+
+def getContentFiles():
+    """Return an array of all content files."""
+    contentFiles = []
+    for contentDir, subDirs, filenames in os.walk(sourceDir):
+        if shouldIgnore(contentDir):
+            subDirs[:] = []
+            continue
+        for filename in filenames:
+            if not shouldIgnore(filename):
+                cf = ContentFile(os.path.join(contentDir, filename))
+                log(`cf.path`)
+                contentFiles.append(cf)
+    return contentFiles
+
+def htmlForMarkdown(md):
+    """Return a unicode containing the HTML for the Markdown unicode *md*."""
+    return mdProcessor.convert(md)
+
+if __name__ == '__main__':
+    main()
+
