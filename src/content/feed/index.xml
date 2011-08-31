@@ -9,7 +9,7 @@ indexable: false
     <atom:link href='http://qwan.org/feed/' rel='self' type='application/rss+xml' />
     <description>Rob Mayoff's Blog and Stuff</description>
     <language>en-us</language>
-    <lastBuildDate>{{buildTime | formatTimeRss}}</lastBuildDate>
+    <lastBuildDate>{{lastPostTime | formatTimeRss}}</lastBuildDate>
     {% for entry in index.posts %}
     <item>
       <title>{{entry.title}}</title>

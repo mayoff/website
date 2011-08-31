@@ -19,6 +19,7 @@ sourceDir = u'src/content'
 templateDir = u'src/templates'
 targetDir = u'ship'
 buildTime = time.time()
+lastPostTime = ''
 localTimeZone = pytz.timezone('US/Central')
 
 class Log:
@@ -204,6 +205,9 @@ class ContentFile(SourceFile):
             title = self.getMetadata(u'title', self.url),
             url = self.url
         ))
+        if self.date:
+            global lastPostTime
+            lastPostTime = max(lastPostTime, self.date)
 
     def buildTarget(self):
         self.makeTargetFolder()
@@ -222,7 +226,8 @@ class ContentFile(SourceFile):
             url=self.url,
             date=self.date,
             content=None,
-            buildTime=buildTime
+            buildTime=buildTime,
+            lastPostTime=lastPostTime
         )
 
     def writeTarget(self, content):
