@@ -1,0 +1,25 @@
+#!/bin/bash -ex
+
+if [[ "$PWD" != */drafts/* ]]; then
+    echo 1>&2 "error: You must run ${0##*/} from a subdirectory of drafts."
+    exit 1
+fi
+
+draftDir="$PWD"
+draftName="${draftDir##*/drafts/}"
+cd "$P_ProjectDir"
+
+date=$(date +%Y/%m/%d)
+dateDirInRepo="src/content/$date"
+publishDirInRepo="$dateDirInRepo/$draftName"
+
+if [[ -d "$publishDirInRepo" ]]; then
+    echo 1>&2 "error: $publishDirInRepo already exists"
+    exit 1
+fi
+
+mkdir -p "dev/$dateDirInRepo"
+mv "$draftDir" "dev/$dateDirInRepo"
+( cd dev && git add "$publishDirInRepo" && git commit -m "publish $publishDirInRepo" "$publishDirInRepo" )
+( cd drafts && git rm -r "$draftName" && git commit -m "publish $publishDirInRepo" "$draftName")
+
