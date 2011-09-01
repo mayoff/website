@@ -267,7 +267,7 @@ def scanTemplateFiles():
 def getContentFiles():
     """Return an array of all content files."""
     contentFiles = []
-    for contentDir, subDirs, filenames in os.walk(sourceDir):
+    for contentDir, subDirs, filenames in os.walk(sourceDir, followlinks=True):
         if shouldIgnore(contentDir):
             subDirs[:] = []
             continue
