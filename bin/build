@@ -29,6 +29,7 @@ class Log:
         self.reset()
 
     def log(self, message):
+        return self
         lines = message.split(u'\n')
         for line in lines:
             sys.stderr.write(self._indent + line + u'\n')
