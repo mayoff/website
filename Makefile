@@ -1,13 +1,18 @@
 
-.PHONY: all clean serve ship
+.PHONY: build clean serve ship
 
-all: clean
+build: clean
+	rm -f src/content/drafts
+	bin/build
+
+drafts: clean
+	[[ -L src/content/drafts ]] || ( rm -f src/content/drafts && ln -s ../../../drafts src/content/drafts )
 	bin/build
 
 clean:
 	rm -rf ship
 
-ship: all
+ship: build
 	bin/ship
 
 serve:
