@@ -1,0 +1,48 @@
+---
+template: default
+title: template-timing-function cheat sheet
+---
+These are graphs of the standard timing functions for <a href='http://www.w3.org/TR/css3-transitions/#transition-timing-function_tag'><code>transition-timing-function</code></a>, <code>-webkit-transition-timing-function</code>, and <code>-moz-transition-timing-function</code>.  You can also use <code>cubic-bezier(x1, y1, x2, y2)</code>.
+<div id='demos' style='
+    max-width: none;
+    width: 100%;
+'></div>
+<script type='text/x-demo-template' id='template'>
+<div style='
+    margin: 1em;
+    background-color: white;
+    display: inline-block;
+    text-align:center;
+'><canvas width=200 height=200></canvas><br><span data-id='name'></span></div>
+</script>
+<script>
+var templateHtml = document.getElementById('template');
+var nodeFactory = document.createElement('div');
+var parent = document.getElementById('demos');
+[
+    { name: 'ease', points: [ 0.25, 0.1, 0.25, 1.0 ] },
+    { name: 'linear', points: [ 0, 0, 1, 1 ] },
+    { name: 'ease-in', points: [ 0.42, 0, 1, 1 ] },
+    { name: 'ease-out', points: [ 0, 0, 0.58, 1 ] },
+    { name: 'ease-in-out', points: [ 0.42, 0, 0.58, 1 ] }
+].forEach(function (demoRecord) {
+    nodeFactory.innerHTML = templateHtml.innerText;
+    var node = nodeFactory.querySelector('div');
+    var nameNode = node.querySelector('[data-id="name"]');
+    nameNode.innerText = demoRecord.name;
+    var canvas = node.querySelector('canvas');
+    var gc = canvas.getContext('2d');
+    gc.scale(canvas.width, canvas.height);
+    gc.translate(0.05, 0.05);
+    gc.scale(.9, .9);
+    gc.translate(0, 1);
+    gc.scale(1, -1);
+    gc.lineWidth = 0.01;
+    gc.lineCap = 'round';
+    gc.moveTo(0, 0);
+    gc.bezierCurveTo.apply(gc, demoRecord.points.concat(1, 1));
+    gc.stroke();
+    parent.appendChild(node);
+});
+</script>
+
