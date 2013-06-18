@@ -6,9 +6,9 @@ video: true
 
 ## What We Want
 
-What should happen when your iOS or OS X app throws an exception and you're running it under the debugger?  It should stop at the moment the exception is thrown, so you can inspect the call stack and the app's variables, and it should show you the exception.
+What should happen when your iOS or OS X app raises an Objective-C exception and you're running it under the debugger?  It should stop at the moment the exception is raised, so you can inspect the call stack and the app's variables, and it should show you the exception.
 
-Unfortunately, by default, the app stops in the default exception handler, after the call stack has been unwound all the way to `main`.  And if you set an exception breakpoint, the app stops at the moment the exception is thrown, with the full call stack available for inspection, but it doesn't show you the exception.
+Unfortunately, by default, the app stops in the default exception handler, after the call stack has been unwound all the way to `main`.  And if you set an exception breakpoint, the app stops at the moment the exception is raised, with the full call stack available for inspection, but it doesn't show you the exception.
 
 If your target is the iOS simulator, or 32-bit OS X, you can print the exception by typing `po ((id*)$esp)[1]` in the debug console when your breakpoint exception is hit.  If your target is an iOS device, you can type `po $r0`.  And if your target is 64-bit OS X, you can type `po $rdi`.
 
