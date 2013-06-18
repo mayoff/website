@@ -79,7 +79,7 @@ You'd like to add an action to the breakpoint to make it print the exception bei
 
 This Python module uses the debugger's API to create a new command named `sniff_objc_exception_throw`.  You need to load the module every time the debugger runs, so edit (or create) the file `~/.lldbinit` and add the following line to it:
 
-    command script import ~/.../lldb/sniff_objc_exception_throw.py
+    command script import ~/Library/lldb/sniff_objc_exception_throw.py
 
 You can copy the code from [this gist](https://gist.github.com/mayoff/5802760) if you prefer.
 
