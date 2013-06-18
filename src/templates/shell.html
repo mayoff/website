@@ -30,6 +30,10 @@
     });
 </script>
 {% endif %}
+{% if page.video %}
+<link rel='stylesheet' href='/facade/video.css'>
+<script type='text/javascript' src='/facade/video.js'></script>
+{% endif %}
 <script>var _gaq=_gaq||[];_gaq.push(["_setAccount","UA-25371980-3"]);_gaq.push(["_setDomainName",".qwan.org"]);_gaq.push(["_trackPageview"]);(function(){var a=document.createElement("script");a.type="text/javascript";a.async=true;a.src=("https:"==document.location.protocol?"https://ssl":"http://www")+".google-analytics.com/ga.js";var b=document.getElementsByTagName("script")[0];b.parentNode.insertBefore(a,b)})()</script>
 {% if page.url != '/' %}
 <a id='indexLink' href='/'>⬅ Back to Rob Mayoff's Site Index</a>

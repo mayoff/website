@@ -8,6 +8,7 @@ build: clean
 drafts: clean
 	[[ -L src/content/drafts ]] || ( rm -f src/content/drafts && ln -s ../../../drafts src/content/drafts )
 	bin/build
+	@echo ...built
 
 clean:
 	rm -rf ship
@@ -16,5 +17,8 @@ ship: build
 	bin/ship
 
 serve:
-	bin/serve > /dev/null < /dev/null 2>&1
+	-echo System-wide apache is configured to serve the ship directory at http://localhost:4000/
+
+auto-drafts:
+	auto bin src ../drafts -- make drafts
 

@@ -1,0 +1,24 @@
+
+.videoWrapper {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+.videoDimmer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    background-image: url('/facade/play-64.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+    opacity: 0.2;
+}
+
+.videoWrapper.playing > .videoDimmer {
+    display: none;
+}
+
