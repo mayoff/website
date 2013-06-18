@@ -1,4 +1,8 @@
 
+#contentBody > DIV.videoWrapper {
+    max-width: none;
+}
+
 .videoWrapper {
     display: inline-block;
     position: relative;
